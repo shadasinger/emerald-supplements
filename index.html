@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emerald | Supplements</title>
+<link rel="icon" type="image/avif" href="assets/favicon.avif">
+<style>
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('fonts/Satoshi-Variable.woff2') format('woff2');
+    font-weight: 300 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --bg: #EFF2F4;
+    --teal: #66DDD8;
+    --teal-btn: rgb(102, 190, 184);
+    --ink: rgb(14, 35, 32);
+    --grey: #7A8580;
+    --card-border: #E3E8EA;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Satoshi', sans-serif;
+    background-color: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Navbar ---------- */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.6);
+    width: 100%;
+  }
+  .navbar-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .navbar-logo img { height: 28px; display: block; }
+  .navbar-actions { display: flex; gap: 10px; }
+  .pill-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .pill-btn.soft { background-color: rgba(14, 35, 32, 0.05); color: var(--ink); }
+  .pill-btn.solid { background-color: var(--teal-btn); color: #fff; }
+
+  /* ---------- Layout ---------- */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 140px;
+  }
+
+  /* ---------- Tab pills ---------- */
+  .tabs { display: flex; gap: 10px; margin-bottom: 28px; }
+  .tab {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    cursor: pointer;
+  }
+  .tab.active { border: 2px solid var(--ink); font-weight: 700; }
+
+  /* ---------- Product grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: #fff;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .card.selected { border: 4px solid var(--teal); padding: 18px; }
+
+  .card-img {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .card-img img { max-height: 100%; max-width: 100%; object-fit: contain; }
+
+  .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .card .subheading { font-size: 13px; font-weight: 500; color: var(--grey); margin-bottom: 8px; }
+  .card .desc { font-size: 14px; line-height: 1.45; color: var(--ink); margin-bottom: 16px; }
+
+  .card-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .card-footer .actions { display: flex; align-items: center; gap: 12px; }
+  .price { font-size: 16px; font-weight: 700; }
+  .add-btn {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 100px;
+    padding: 8px 18px;
+    cursor: pointer;
+  }
+  .card.selected .add-btn { background: var(--teal); border-color: var(--teal); color: var(--ink); }
+
+  .qty { display: flex; align-items: center; gap: 8px; }
+  .qty-btn {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    width: 26px;
+    height: 26px;
+    line-height: 1;
+    border: 1.5px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 100px;
+    cursor: pointer;
+  }
+  .qty-num { font-size: 14px; font-weight: 700; min-width: 12px; text-align: center; }
+
+  .empty-msg { color: var(--grey); font-size: 15px; padding: 40px 0; }
+
+  /* ---------- Checkout bar ---------- */
+  .checkout-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.85);
+    border-top: 1px solid var(--card-border);
+  }
+  .checkout-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+  }
+  .totals { text-align: right; }
+  .totals .total { font-size: 17px; font-weight: 700; }
+  .totals .delivery { font-size: 13px; color: var(--grey); }
+  .checkout-btn {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    padding: 14px 32px;
+    cursor: pointer;
+  }
+  .checkout-btn:disabled { opacity: 0.4; cursor: default; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-logo" href="./"><img src="assets/emerald-logo.png" alt="Emerald"></a>
+    <div class="navbar-actions">
+      <a class="pill-btn soft" href="https://portal.withemerald.com/log-in" target="_blank" rel="noopener">Log In</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="tabs">
+    <button class="tab" id="tab-prescription">Your supplement prescription</button>
+    <button class="tab" id="tab-all">All supplements</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="checkout-bar">
+  <div class="checkout-inner">
+    <div class="totals">
+      <div class="total" id="total">£0.00</div>
+      <div class="delivery">Delivery fee: £3.50</div>
+    </div>
+    <button class="checkout-btn" id="checkout" disabled>Checkout</button>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------
+// Product catalogue.
+// `id` is the Stripe product id — pass these to Stripe at checkout.
+// `slug` (+ aliases) map to the URL query parameter, e.g.
+//   index.html?products=magnesium+vitamin-d3-spray
+// ---------------------------------------------------------------
+const DELIVERY_FEE = 3.50;
+
+const PRODUCTS = [
+  { id: 'prod_UgSaa7z1OTTm13', slug: 'vitamin-d-high-dose', aliases: ['highdose-vitamin-d3', 'vitamin-d3-high-dose'],
+    name: 'Vitamin D High-dose', sub: '25,000 IU Vitamin D3 · One tablet weekly · 6-week supply',
+    desc: 'A concentrated weekly dose to restore low vitamin D levels quickly, supporting healthy bones, muscles and immunity.',
+    price: 14.99, img: 'images/highdose-vitamin-d3.png', maxOne: true },
+
+  { id: 'prod_UgSASdhqXTNlrn', slug: 'vitamin-b12', aliases: ['vitamin-b12-500mg', 'b12'],
+    name: 'BioCare Vitamin B12', sub: '0.5 mg Vitamin B12 · One capsule daily · 30-day supply · Suitable for vegans',
+    desc: 'Gentle daily B12 to support normal energy release and a healthy nervous system. Vegan-friendly.',
+    price: 14.89, img: 'images/vitamin-b12-500mg.jpg' },
+
+  { id: 'prod_UgS1jMPPugc3NM', slug: 'vitamin-d3-spray', aliases: ['vitamin-d-spray', 'd3-spray'],
+    name: 'BioCare Vitamin D Mouth Spray', sub: '1,000 IU Vitamin D3 · One spray daily · 120-day supply',
+    desc: 'A convenient daily spray for healthy bones, teeth and immune function — no tablets needed.',
+    price: 10.85, img: 'images/vitamin-d3-spray.jpg' },
+
+  { id: 'prod_UfqzOk2puZTzqx', slug: 'iron-complex', aliases: ['low-dose-iron'],
+    name: 'BioCare Iron Complex', sub: 'Iron & Vitamin C · One capsule daily · 90-day supply',
+    desc: 'Low-dose iron paired with vitamin C for better absorption, supporting energy and reducing tiredness.',
+    price: 21.19, img: 'images/iron-complex.jpg' },
+
+  { id: 'prod_UQlPiuhrmnKSZT', slug: 'selenium', aliases: [],
+    name: 'BioCare Selenium', sub: '100 mcg Selenium · One capsule daily · 120-day supply',
+    desc: 'Daily selenium to support thyroid function, immunity and protection from oxidative stress.',
+    price: 16.15, img: 'images/selenium.jpg' },
+
+  { id: 'prod_TcurGRZPyhaSo8', slug: 'magnesium', aliases: ['magnesium-glycinate'],
+    name: 'BioCare Magnesium Glycinate', sub: '200 mg Magnesium · TWO capsules daily · 30-day supply',
+    desc: 'A gentle, highly absorbable form of magnesium to support calm, relaxation and restful sleep.',
+    price: 16.99, img: 'images/magnesium-glycinate.jpeg' },
+
+  { id: 'prod_TX2JT0x7Rs4y6h', slug: 'multivitamins', aliases: ['multivitamin'],
+    name: 'BioCare Multivitamins & Minerals', sub: 'Multivitamins & Minerals · One capsule daily · 30-day supply · Suitable for vegans',
+    desc: 'Comprehensive everyday cover of essential vitamins and minerals in one vegan capsule.',
+    price: 15.29, img: 'images/multivitamins.jpg' },
+
+  { id: 'prod_TWui1j4srE29ij', slug: 'vitamin-d3', aliases: ['vitamin-d', 'vitamin-d3-tablet'],
+    name: 'BioCare Vitamin D', sub: '1,000 IU Vitamin D3 · One tablet daily · 60-day supply',
+    desc: 'Steady daily vitamin D3 to maintain healthy bones, muscles and normal immune function.',
+    price: 14.89, img: 'images/vitamin-d3-tablet.jpg' },
+
+  { id: 'prod_TWufdeoOVC3MU2', slug: 'zinc', aliases: [],
+    name: 'BioCare Zinc', sub: '17.1 mg Zinc · One tablet daily · 90-day supply',
+    desc: 'Daily zinc to support immunity, skin health and normal hormone function.',
+    price: 8.05, img: 'images/zinc.jpg' },
+
+  { id: 'prod_TWuZrTOmJO1LtM', slug: 'b12-high-dose', aliases: ['b12-1000mg', 'high-dose-b12'],
+    name: 'High-dose Vitamin B12', sub: '1,000 mg Vitamin B12 · One tablet daily · 87-day supply',
+    desc: 'High-strength B12 to correct low levels, supporting energy, focus and red blood cell formation.',
+    price: 10.99, img: 'images/b12-1000mg.jpeg', maxOne: true },
+
+  { id: 'prod_TWuWRb6trHsdgt', slug: 'iron-high-dose', aliases: ['highdose-iron', 'high-dose-iron'],
+    name: 'High-dose Iron (Ferrous Sulphate)', sub: '200 mg Iron · One tablet on alternate days · 112-day supply',
+    desc: 'High-strength iron taken on alternate days to restore iron levels and fight fatigue.',
+    price: 6.99, img: 'images/highdose-iron.jpeg', maxOne: true },
+
+  { id: 'prod_TWuVo50yGyEej0', slug: 'omega-3', aliases: ['omega3'],
+    name: 'BioCare Omega-3', sub: 'Mega EPA Forte (2.4g) · Two capsules daily · 30-day supply',
+    desc: 'Concentrated EPA fish oil to support normal heart, brain and eye health.',
+    price: 32.65, img: 'images/omega-3.jpg' },
+
+  { id: 'prod_TWdGhieTFnpOnQ', slug: 'vitamin-c', aliases: [],
+    name: 'BioCare Vitamin C', sub: '1,000 mg Vitamin C · One tablet daily · 90-day supply',
+    desc: 'High-strength vitamin C to support immunity, skin health and normal energy metabolism.',
+    price: 12.49, img: 'images/vitamin-c.jpg' },
+
+  { id: 'prod_TWdGBSP1jYKgS4', slug: 'methylfolate', aliases: ['folate', 'folic-acid'],
+    name: 'BioCare Methylfolate (Folic Acid)', sub: '400 mcg Methylfolate · Four drops daily · 49-day supply',
+    desc: 'Bioavailable folate drops to support cell renewal and normal blood formation.',
+    price: 25.39, img: 'images/methylfolate.jpg' },
+];
+
+// --- Prescription from query params -----------------------------
+// "+" in a query string decodes to a space, so split on spaces,
+// commas or plus signs: ?products=magnesium+vitamin-d3-spray
+function getPrescriptionSlugs() {
+  const raw = new URLSearchParams(location.search).get('products') || '';
+  return raw.split(/[\s,+]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+}
+
+function matchProduct(slugParam) {
+  return PRODUCTS.find(p => p.slug === slugParam || p.aliases.includes(slugParam));
+}
+
+const prescriptionIds = getPrescriptionSlugs()
+  .map(matchProduct)
+  .filter(Boolean)
+  .map(p => p.id);
+
+// --- State -------------------------------------------------------
+// cart: product id -> quantity
+const cart = new Map();
+let activeTab = prescriptionIds.length ? 'prescription' : 'all';
+
+// Display order — matches the 'Emerald Supplement prices' table
+const ORDER = [
+  'vitamin-d3',          // Biocare Vitamin D3 1000U Tablets
+  'vitamin-d3-spray',    // Biocare Vitamin D3 1000U Spray
+  'omega-3',             // Biocare Omega-3 (Mega EPA Forte)
+  'iron-complex',        // Biocare Iron Complex
+  'vitamin-c',           // Biocare Vitamin C 1g Tablets
+  'vitamin-b12',         // Biocare Vitamin B12 0.5mg Tablets
+  'multivitamins',       // Biocare Multivitamin
+  'methylfolate',        // Biocare Methylfolate Drops
+  'zinc',                // Biocare Zinc
+  'magnesium',           // Biocare Magnesium Glycinate
+  'selenium',            // Biocare Selenium
+  'iron-high-dose',      // Iron High-dose 200mg Tablets
+  'b12-high-dose',       // Vitamin B12 1mg Tablets
+  'vitamin-d-high-dose', // High-dose Vitamin D3 25,000U
+];
+const SORTED = [...PRODUCTS].sort((a, b) => ORDER.indexOf(a.slug) - ORDER.indexOf(b.slug));
+
+const grid = document.getElementById('grid');
+const totalEl = document.getElementById('total');
+const checkoutBtn = document.getElementById('checkout');
+const tabPrescription = document.getElementById('tab-prescription');
+const tabAll = document.getElementById('tab-all');
+
+function gbp(n) { return '£' + n.toFixed(2); }
+
+function render() {
+  // Hide the prescription tab entirely when there's no prescription link
+  tabPrescription.style.display = prescriptionIds.length ? '' : 'none';
+  tabPrescription.classList.toggle('active', activeTab === 'prescription');
+  tabAll.classList.toggle('active', activeTab === 'all');
+
+  const visible = activeTab === 'all'
+    ? SORTED
+    : SORTED.filter(p => prescriptionIds.includes(p.id));
+
+  if (!visible.length) {
+    grid.innerHTML = '<p class="empty-msg">No supplement prescription found.</p>';
+  } else {
+    grid.innerHTML = visible.map(p => {
+      const qty = cart.get(p.id) || 0;
+      const stepper = qty && !p.maxOne ? `
+        <span class="qty">
+          <button class="qty-btn" data-action="dec">−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" data-action="inc">+</button>
+        </span>` : '';
+      return `
+      <div class="card ${qty ? 'selected' : ''}" data-id="${p.id}">
+        <div class="card-img"><img src="${p.img}" alt="${p.name}"></div>
+        <h3>${p.name}</h3>
+        <div class="subheading">${p.sub}</div>
+        <p class="desc">${p.desc}</p>
+        <div class="card-footer">
+          <span class="price">${gbp(p.price)}</span>
+          <span class="actions">
+            ${stepper}
+            <button class="add-btn">${qty ? 'Added ✓' : 'Add'}</button>
+          </span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const subtotal = PRODUCTS.reduce((s, p) => s + p.price * (cart.get(p.id) || 0), 0);
+  totalEl.textContent = gbp(cart.size ? subtotal + DELIVERY_FEE : 0);
+  checkoutBtn.disabled = cart.size === 0;
+}
+
+grid.addEventListener('click', e => {
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const id = card.dataset.id;
+  const qty = cart.get(id) || 0;
+  const action = e.target.dataset.action;
+
+  if (action === 'inc') {
+    cart.set(id, qty + 1);
+  } else if (action === 'dec') {
+    qty > 1 ? cart.set(id, qty - 1) : cart.delete(id);
+  } else {
+    qty ? cart.delete(id) : cart.set(id, 1);
+  }
+  render();
+});
+
+tabPrescription.addEventListener('click', () => { activeTab = 'prescription'; render(); });
+tabAll.addEventListener('click', () => { activeTab = 'all'; render(); });
+
+// --- Checkout ----------------------------------------------------
+// Stripe integration goes here. `getCheckoutPayload()` returns the
+// selected items (with Stripe product ids) ready to send to a
+// Checkout Session endpoint.
+function getCheckoutPayload() {
+  return {
+    items: PRODUCTS.filter(p => cart.has(p.id))
+      .map(p => ({ stripeProductId: p.id, name: p.name, unitAmount: Math.round(p.price * 100), quantity: cart.get(p.id) })),
+    deliveryFee: Math.round(DELIVERY_FEE * 100),
+    currency: 'gbp',
+  };
+}
+
+checkoutBtn.addEventListener('click', () => {
+  const payload = getCheckoutPayload();
+  console.log('Checkout payload (send to Stripe):', payload);
+  // TODO (engineering): POST payload to backend → create Stripe Checkout Session → redirect.
+});
+
+render();
+</script>
+</body>
+</html>
