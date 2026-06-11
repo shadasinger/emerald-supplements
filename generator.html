@@ -103,27 +103,31 @@
     max-width: 1100px;
     margin: 0 auto;
     padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
   }
+  .link-wrap { position: relative; }
   .link-field {
-    flex: 1;
+    width: 100%;
     font-family: 'Satoshi', sans-serif;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--ink);
     background: #fff;
     border: 1px solid var(--card-border);
     border-radius: 100px;
-    padding: 14px 20px;
+    padding: 16px 160px 16px 20px;
     outline: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .link-field::placeholder { font-weight: 400; }
   .copy-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
     font-family: 'Satoshi', sans-serif;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -132,7 +136,7 @@
     color: #fff;
     border: none;
     border-radius: 100px;
-    padding: 14px 24px;
+    padding: 11px 20px;
     cursor: pointer;
     white-space: nowrap;
   }
@@ -158,11 +162,13 @@
 
 <div class="link-bar">
   <div class="link-inner">
+    <div class="link-wrap">
     <input class="link-field" id="link" type="text" readonly placeholder="Select supplements to generate a link">
     <button class="copy-btn" id="copy" disabled>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
       <span id="copy-label">Copy link</span>
     </button>
+    </div>
   </div>
 </div>
 
